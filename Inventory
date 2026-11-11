@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>DevCalc</title>
+  
+  <!-- iOS Standalone App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DevCalc">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1011/1011863.png">
+  
+  <!-- Web App Manifest (Inline Blob Registration) -->
+  <link rel="manifest" id="manifest-placeholder">
+  
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --subtext: #94a3b8;
+      --border: #334155;
+      --highlight: #22c55e;
+      --danger: #f87171;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+    .subtitle {
+      color: var(--subtext);
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 768px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      margin-top: 0;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      color: #e2e8f0;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--subtext);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    select, input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      font-size: 1rem;
+      box-sizing: border-box;
+      -webkit-appearance: none;
+    }
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.9rem;
+    }
+    .result-row:last-child {
+      border-bottom: none;
+    }
+    .result-row .label { color: var(--subtext); }
+    .result-row .value { font-weight: 600; }
+    .result-row .deduction { color: var(--danger); }
+    
+    .highlight-box {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 14px;
+      text-align: center;
+    }
+    .highlight-box .title {
+      font-size: 0.8rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .highlight-box .big-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--highlight);
+      margin: 4px 0;
+    }
+    .highlight-box .sub-num {
+      font-size: 1rem;
+      color: #e2e8f0;
+    }
+    .psf-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .psf-card {
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .psf-card .psf-lbl {
+      font-size: 0.7rem;
+      color: var(--subtext);
+      text-transform: uppercase;
+    }
+    .psf-card .psf-val {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+    .search-filter {
+      margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Developer Revenue Calculator</h1>
+  <div class="subtitle">Offline Native App • 227 Inventory Units</div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>1. Unit Parameters</h2>
+      
+      <div class="form-group search-filter">
+        <label>Search Unit</label>
+        <input type="text" id="searchInput" placeholder="Search Unit No..." oninput="filterUnits()">
+      </div>
+
+      <div class="form-group">
+        <label for="unitSelect">Select Unit Number</label>
+        <select id="unitSelect" onchange="calculate()"></select>
+      </div>
+
+      <div class="form-group">
+        <label for="spotCash">Spot Cash Value Override (AED)</label>
+        <input type="number" id="spotCash" placeholder="Leave blank for base price" oninput="calculate()">
+      </div>
+
+      <div class="form-group">
+        <label for="discountPct">Discount (%)</label>
+        <input type="number" id="discountPct" value="0" min="0" max="100" step="0.5" oninput="calculate()">
+      </div>
+
+      <div class="form-group">
+        <label for="dldWaiver">DLD Waiver (% - Developer Cost)</label>
+        <select id="dldWaiver" onchange="calculate()">
+          <option value="0">0% Waiver</option>
+          <option value="1">1% Waiver</option>
+          <option value="2">2% Waiver</option>
+          <option value="3">3% Waiver</option>
+          <option value="4" selected>4% Waiver (Full DLD Paid)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="agencyComm">Agency Commission (%)</label>
+        <select id="agencyComm" onchange="calculate()">
+          <option value="0">0%</option>
+          <option value="1">1%</option>
+          <option value="2" selected>2%</option>
+          <option value="3">3%</option>
+          <option value="4">4%</option>
+          <option value="5">5%</option>
+          <option value="6">6%</option>
+          <option value="7">7%</option>
+          <option value="8">8%</option>
+          <option value="9">9%</option>
+          <option value="10">10%</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="internalComm">Internal Commission (%)</label>
+        <select id="internalComm" onchange="calculate()">
+          <option value="1.2" selected>1.2%</option>
+          <option value="3.6">3.6%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Revenue Realization</h2>
+
+      <div class="result-row">
+        <span class="label">Bedrooms / Layout</span>
+        <span class="value" id="dispBeds">-</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Floor Level</span>
+        <span class="value" id="dispFloor">-</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Net Unit Size</span>
+        <span class="value" id="dispSize">-</span>
+      </div>
+
+      <div class="psf-box">
+        <div class="psf-card">
+          <div class="psf-lbl">Orig Price / Sq.Ft</div>
+          <div class="psf-val" id="dispOrigPSF">0 AED</div>
+        </div>
+        <div class="psf-card">
+          <div class="psf-lbl">Discounted / Sq.Ft</div>
+          <div class="psf-val" id="dispDiscountedPSF">0 AED</div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="result-row">
+        <span class="label">Original Base Price</span>
+        <span class="value" id="dispBasePrice">-</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Less: Discount Amount</span>
+        <span class="value deduction" id="dispDiscountAmount">-</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Selling Price After Discount</span>
+        <span class="value" id="dispDiscountedPrice">-</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Less: DLD Waiver Cost</span>
+        <span class="value deduction" id="dispDldFee">-</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Less: Agency Commission</span>
+        <span class="value deduction" id="dispAgencyFee">-</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Less: Internal Commission</span>
+        <span class="value deduction" id="dispInternalFee">-</span>
+      </div>
+
+      <div class="highlight-box">
+        <div class="title">Developer Net Realized Revenue</div>
+        <div class="big-num" id="dispNetRevenue">AED 0</div>
+        <div class="sub-num" id="dispNetPSF">0 AED / SQ.FT Net</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Inline Dynamic Manifest for PWA compatibility
+const manifestData = {
+  "name": "Developer Revenue Calculator",
+  "short_name": "DevCalc",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a"
+};
+const stringManifest = JSON.stringify(manifestData);
+const blobManifest = new Blob([stringManifest], {type: 'application/json'});
+const manifestURL = URL.createObjectURL(blobManifest);
+document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
+
+const inventory = [
+  {"Unit": "201", "Beds": "1 BR", "Size": 834.96, "Price": 1367803.0, "Floor": "Lvl 2"},
+  {"Unit": "202", "Beds": "1 BR", "Size": 827.31, "Price": 1355322.0, "Floor": "Lvl 2"},
+  {"Unit": "203", "Beds": "STUDIO", "Size": 410.0, "Price": 740004.0, "Floor": "Lvl 2"},
+  {"Unit": "204", "Beds": "1 BR", "Size": 819.24, "Price": 1342155.0, "Floor": "Lvl 2"},
+  {"Unit": "205", "Beds": "2 BR", "Size": 1632.35, "Price": 2539938.0, "Floor": "Lvl 2"},
+  {"Unit": "206", "Beds": "2 BR", "Size": 1568.41, "Price": 2151745.0, "Floor": "Lvl 2"},
+  {"Unit": "207", "Beds": "STUDIO", "Size": 485.67, "Price": 767359.0, "Floor": "Lvl 2"},
+  {"Unit": "208", "Beds": "STUDIO", "Size": 485.67, "Price": 725000.0, "Floor": "Lvl 2"},
+  {"Unit": "209", "Beds": "STUDIO", "Size": 408.7, "Price": 715225.0, "Floor": "Lvl 2"},
+  {"Unit": "210", "Beds": "STUDIO", "Size": 410.0, "Price": 717535.0, "Floor": "Lvl 2"},
+  {"Unit": "211", "Beds": "1 BR", "Size": 828.18, "Price": 1160593.0, "Floor": "Lvl 2"},
+  {"Unit": "212", "Beds": "2 BR", "Size": 1267.13, "Price": 1772813.0, "Floor": "Lvl 2"},
+  {"Unit": "213", "Beds": "1 BR", "Size": 788.0, "Price": 1044484.0, "Floor": "Lvl 2"},
+  {"Unit": "214", "Beds": "1 BR", "Size": 825.16, "Price": 1156381.0, "Floor": "Lvl 2"},
+  {"Unit": "215", "Beds": "1 BR", "Size": 827.31, "Price": 1159380.0, "Floor": "Lvl 2"},
+  {"Unit": "216", "Beds": "1 BR", "Size": 819.89, "Price": 1070000.0, "Floor": "Lvl 2"},
+  {"Unit": "217", "Beds": "2 BR", "Size": 1629.76, "Price": 2064144.0, "Floor": "Lvl 2"},
+  {"Unit": "218", "Beds": "2 BR", "Size": 1571.32, "Price": 2445181.0, "Floor": "Lvl 2"},
+  {"Unit": "219", "Beds": "1 BR", "Size": 833.13, "Price": 1320968.0, "Floor": "Lvl 2"},
+  {"Unit": "301", "Beds": "1 BR", "Size": 834.74, "Price": 1374474.0, "Floor": "Lvl 3"},
+  {"Unit": "302", "Beds": "1 BR", "Size": 827.31, "Price": 1362288.0, "Floor": "Lvl 3"},
+  {"Unit": "303", "Beds": "STUDIO", "Size": 410.0, "Price": 773921.0, "Floor": "Lvl 3"},
+  {"Unit": "304", "Beds": "1 BR", "Size": 819.13, "Price": 1276205.0, "Floor": "Lvl 3"},
+  {"Unit": "305", "Beds": "2 BR", "Size": 1333.97, "Price": 2158106.0, "Floor": "Lvl 3"},
+  {"Unit": "306", "Beds": "2 BR", "Size": 1155.18, "Price": 1626400.0, "Floor": "Lvl 3"},
+  {"Unit": "307", "Beds": "STUDIO", "Size": 485.67, "Price": 771244.0, "Floor": "Lvl 3"},
+  {"Unit": "308", "Beds": "STUDIO", "Size": 485.56, "Price": 771069.0, "Floor": "Lvl 3"},
+  {"Unit": "309", "Beds": "STUDIO", "Size": 408.71, "Price": 718512.0, "Floor": "Lvl 3"},
+  {"Unit": "310", "Beds": "STUDIO", "Size": 408.71, "Price": 718512.0, "Floor": "Lvl 3"},
+  {"Unit": "311", "Beds": "1 BR", "Size": 828.18, "Price": 1167567.0, "Floor": "Lvl 3"},
+  {"Unit": "312", "Beds": "1 BR", "Size": 802.02, "Price": 1069093.0, "Floor": "Lvl 3"},
+  {"Unit": "313", "Beds": "2 BR", "Size": 1635.68, "Price": 2128440.0, "Floor": "Lvl 3"},
+  {"Unit": "314", "Beds": "STUDIO", "Size": 410.0, "Price": 720815.0, "Floor": "Lvl 3"},
+  {"Unit": "315", "Beds": "1 BR", "Size": 827.31, "Price": 1102804.0, "Floor": "Lvl 3"},
+  {"Unit": "316", "Beds": "1 BR", "Size": 819.78, "Price": 1155781.0, "Floor": "Lvl 3"},
+  {"Unit": "317", "Beds": "2 BR", "Size": 1331.5, "Price": 2084042.0, "Floor": "Lvl 3"},
+  {"Unit": "318", "Beds": "2 BR", "Size": 1177.0, "Price": 1776883.0, "Floor": "Lvl 3"},
+  {"Unit": "319", "Beds": "1 BR", "Size": 832.91, "Price": 1371472.0, "Floor": "Lvl 3"}
+];
+
+function init() { filterUnits(); }
+
+function filterUnits() {
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const select = document.getElementById('unitSelect');
+  select.innerHTML = '';
+  const filtered = inventory.filter(u => u.Unit.toLowerCase().includes(search));
+  if (filtered.length === 0) {
+    const opt = document.createElement('option');
+    opt.textContent = 'No matching units found';
+    select.appendChild(opt);
+    return;
+  }
+  filtered.forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.Unit;
+    opt.textContent = `Unit ${u.Unit} (${u.Beds})`;
+    select.appendChild(opt);
+  });
+  calculate();
+}
+
+function calculate() {
+  const unitId = document.getElementById('unitSelect').value;
+  const unit = inventory.find(u => u.Unit === unitId);
+  if (!unit) return;
+
+  document.getElementById('dispBeds').textContent = unit.Beds || 'N/A';
+  document.getElementById('dispFloor').textContent = unit.Floor || 'N/A';
+  document.getElementById('dispSize').textContent = `${unit.Size.toLocaleString()} sq.ft`;
+
+  const spotCashVal = parseFloat(document.getElementById('spotCash').value);
+  const discountPct = parseFloat(document.getElementById('discountPct').value) || 0;
+  const dldWaiverPct = parseFloat(document.getElementById('dldWaiver').value) || 0;
+  const agencyCommPct = parseFloat(document.getElementById('agencyComm').value) || 0;
+  const internalCommPct = parseFloat(document.getElementById('internalComm').value) || 1.2;
+
+  const basePrice = !isNaN(spotCashVal) && spotCashVal > 0 ? spotCashVal : unit.Price;
+  const discountAmount = basePrice * (discountPct / 100);
+  const discountedSellingPrice = basePrice - discountAmount;
+
+  const origPSF = unit.Size > 0 ? basePrice / unit.Size : 0;
+  const discountedPSF = unit.Size > 0 ? discountedSellingPrice / unit.Size : 0;
+
+  const dldCost = discountedSellingPrice * (dldWaiverPct / 100);
+  const agencyCost = discountedSellingPrice * (agencyCommPct / 100);
+  const internalCost = discountedSellingPrice * (internalCommPct / 100);
+
+  const netRealizedRevenue = discountedSellingPrice - dldCost - agencyCost - internalCost;
+  const netPSF = unit.Size > 0 ? netRealizedRevenue / unit.Size : 0;
+
+  const fmt = (num) => 'AED ' + Math.round(num).toLocaleString();
+
+  document.getElementById('dispOrigPSF').textContent = `${origPSF.toFixed(2)} AED/sq.ft`;
+  document.getElementById('dispDiscountedPSF').textContent = `${discountedPSF.toFixed(2)} AED/sq.ft`;
+
+  document.getElementById('dispBasePrice').textContent = fmt(basePrice);
+  document.getElementById('dispDiscountAmount').textContent = `- ${fmt(discountAmount)} (${discountPct}%)`;
+  document.getElementById('dispDiscountedPrice').textContent = fmt(discountedSellingPrice);
+  document.getElementById('dispDldFee').textContent = `- ${fmt(dldCost)} (${dldWaiverPct}%)`;
+  document.getElementById('dispAgencyFee').textContent = `- ${fmt(agencyCost)} (${agencyCommPct}%)`;
+  document.getElementById('dispInternalFee').textContent = `- ${fmt(internalCommPct)} (${internalCommPct}%)`;
+
+  document.getElementById('dispNetRevenue').textContent = fmt(netRealizedRevenue);
+  document.getElementById('dispNetPSF').textContent = `${netPSF.toFixed(2)} AED / SQ.FT Net`;
+}
+
+window.onload = init;
+</script>
+
+</body>
+</html>
