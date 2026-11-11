@@ -2,18 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>DevCalc</title>
-  
-  <!-- iOS Standalone App Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="DevCalc">
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1011/1011863.png">
-  
-  <!-- Web App Manifest (Inline Blob Registration) -->
-  <link rel="manifest" id="manifest-placeholder">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Revenue & Valuation Calculator</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -30,78 +20,76 @@
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
-      -webkit-user-select: none;
-      user-select: none;
+      padding: 24px;
     }
     .container {
-      max-width: 800px;
+      max-width: 1100px;
       margin: 0 auto;
     }
     h1 {
-      font-size: 1.5rem;
-      margin-bottom: 4px;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
       color: var(--accent);
     }
     .subtitle {
       color: var(--subtext);
-      margin-bottom: 20px;
-      font-size: 0.85rem;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
     }
     .grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
     }
-    @media (min-width: 768px) {
-      .grid { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 850px) {
+      .grid { grid-template-columns: 1fr; }
     }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 16px;
+      padding: 20px;
     }
     .card h2 {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       margin-top: 0;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       color: #e2e8f0;
     }
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
     label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--subtext);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
     select, input {
       width: 100%;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 10px 12px;
+      border-radius: 6px;
       border: 1px solid var(--border);
       background: #0f172a;
       color: var(--text);
       font-size: 1rem;
       box-sizing: border-box;
-      -webkit-appearance: none;
     }
     select:focus, input:focus {
       outline: none;
       border-color: var(--accent);
     }
+
     .result-row {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 10px 0;
       border-bottom: 1px dashed var(--border);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
     .result-row:last-child {
       border-bottom: none;
@@ -113,65 +101,80 @@
     .highlight-box {
       background: rgba(56, 189, 248, 0.1);
       border: 1px solid var(--accent);
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 16px;
-      margin-top: 14px;
+      margin-top: 16px;
       text-align: center;
     }
     .highlight-box .title {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--accent);
       text-transform: uppercase;
       font-weight: 600;
     }
     .highlight-box .big-num {
-      font-size: 1.8rem;
+      font-size: 2.1rem;
       font-weight: 800;
       color: var(--highlight);
-      margin: 4px 0;
+      margin: 6px 0;
     }
     .highlight-box .sub-num {
-      font-size: 1rem;
+      font-size: 1.1rem;
       color: #e2e8f0;
     }
     .psf-box {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 12px;
+      margin-top: 12px;
     }
     .psf-card {
       background: #0f172a;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
       border: 1px solid var(--border);
       text-align: center;
     }
     .psf-card .psf-lbl {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: var(--subtext);
       text-transform: uppercase;
     }
     .psf-card .psf-val {
-      font-size: 1.05rem;
+      font-size: 1.2rem;
       font-weight: bold;
       color: var(--accent);
-      margin-top: 2px;
+      margin-top: 4px;
     }
     .search-filter {
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
   </style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DevCalc">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+  <!-- Mobile Standalone App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DevCalc">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1011/1011863.png">
 </head>
 <body>
 
 <div class="container">
-  <h1>Developer Revenue Calculator</h1>
-  <div class="subtitle">Offline Native App • 227 Inventory Units</div>
+  <h1>Developer Revenue & Pricing Calculator</h1>
+  <div class="subtitle">Developer Perspective • Offline Access • Full Inventory (227 Units)</div>
 
   <div class="grid">
+    <!-- LEFT PANEL: CONTROLS & UNIT SELECT -->
     <div class="card">
-      <h2>1. Unit Parameters</h2>
+      <h2>1. Select Unit & Set Parameters</h2>
       
       <div class="form-group search-filter">
         <label>Search Unit</label>
@@ -185,7 +188,7 @@
 
       <div class="form-group">
         <label for="spotCash">Spot Cash Value Override (AED)</label>
-        <input type="number" id="spotCash" placeholder="Leave blank for base price" oninput="calculate()">
+        <input type="number" id="spotCash" placeholder="Leave blank to use base net price" oninput="calculate()">
       </div>
 
       <div class="form-group">
@@ -196,11 +199,11 @@
       <div class="form-group">
         <label for="dldWaiver">DLD Waiver (% - Developer Cost)</label>
         <select id="dldWaiver" onchange="calculate()">
-          <option value="0">0% Waiver</option>
+          <option value="0">0% Waiver (No DLD Cost to Developer)</option>
           <option value="1">1% Waiver</option>
           <option value="2">2% Waiver</option>
           <option value="3">3% Waiver</option>
-          <option value="4" selected>4% Waiver (Full DLD Paid)</option>
+          <option value="4" selected>4% Waiver (Full DLD Paid by Developer)</option>
         </select>
       </div>
 
@@ -230,8 +233,9 @@
       </div>
     </div>
 
+    <!-- RIGHT PANEL: DETAILS & DEVELOPER BREAKDOWN -->
     <div class="card">
-      <h2>2. Revenue Realization</h2>
+      <h2>2. Developer Revenue Realization</h2>
 
       <div class="result-row">
         <span class="label">Bedrooms / Layout</span>
@@ -248,11 +252,11 @@
 
       <div class="psf-box">
         <div class="psf-card">
-          <div class="psf-lbl">Orig Price / Sq.Ft</div>
+          <div class="psf-lbl">Original Price / Sq.Ft</div>
           <div class="psf-val" id="dispOrigPSF">0 AED</div>
         </div>
         <div class="psf-card">
-          <div class="psf-lbl">Discounted / Sq.Ft</div>
+          <div class="psf-lbl">Price / Sq.Ft After Discount</div>
           <div class="psf-val" id="dispDiscountedPSF">0 AED</div>
         </div>
       </div>
@@ -294,81 +298,1642 @@
 </div>
 
 <script>
-// Inline Dynamic Manifest for PWA compatibility
-const manifestData = {
-  "name": "Developer Revenue Calculator",
-  "short_name": "DevCalc",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a"
-};
-const stringManifest = JSON.stringify(manifestData);
-const blobManifest = new Blob([stringManifest], {type: 'application/json'});
-const manifestURL = URL.createObjectURL(blobManifest);
-document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
-
+// Complete embedded inventory data (225 units)
 const inventory = [
-  {"Unit": "201", "Beds": "1 BR", "Size": 834.96, "Price": 1367803.0, "Floor": "Lvl 2"},
-  {"Unit": "202", "Beds": "1 BR", "Size": 827.31, "Price": 1355322.0, "Floor": "Lvl 2"},
-  {"Unit": "203", "Beds": "STUDIO", "Size": 410.0, "Price": 740004.0, "Floor": "Lvl 2"},
-  {"Unit": "204", "Beds": "1 BR", "Size": 819.24, "Price": 1342155.0, "Floor": "Lvl 2"},
-  {"Unit": "205", "Beds": "2 BR", "Size": 1632.35, "Price": 2539938.0, "Floor": "Lvl 2"},
-  {"Unit": "206", "Beds": "2 BR", "Size": 1568.41, "Price": 2151745.0, "Floor": "Lvl 2"},
-  {"Unit": "207", "Beds": "STUDIO", "Size": 485.67, "Price": 767359.0, "Floor": "Lvl 2"},
-  {"Unit": "208", "Beds": "STUDIO", "Size": 485.67, "Price": 725000.0, "Floor": "Lvl 2"},
-  {"Unit": "209", "Beds": "STUDIO", "Size": 408.7, "Price": 715225.0, "Floor": "Lvl 2"},
-  {"Unit": "210", "Beds": "STUDIO", "Size": 410.0, "Price": 717535.0, "Floor": "Lvl 2"},
-  {"Unit": "211", "Beds": "1 BR", "Size": 828.18, "Price": 1160593.0, "Floor": "Lvl 2"},
-  {"Unit": "212", "Beds": "2 BR", "Size": 1267.13, "Price": 1772813.0, "Floor": "Lvl 2"},
-  {"Unit": "213", "Beds": "1 BR", "Size": 788.0, "Price": 1044484.0, "Floor": "Lvl 2"},
-  {"Unit": "214", "Beds": "1 BR", "Size": 825.16, "Price": 1156381.0, "Floor": "Lvl 2"},
-  {"Unit": "215", "Beds": "1 BR", "Size": 827.31, "Price": 1159380.0, "Floor": "Lvl 2"},
-  {"Unit": "216", "Beds": "1 BR", "Size": 819.89, "Price": 1070000.0, "Floor": "Lvl 2"},
-  {"Unit": "217", "Beds": "2 BR", "Size": 1629.76, "Price": 2064144.0, "Floor": "Lvl 2"},
-  {"Unit": "218", "Beds": "2 BR", "Size": 1571.32, "Price": 2445181.0, "Floor": "Lvl 2"},
-  {"Unit": "219", "Beds": "1 BR", "Size": 833.13, "Price": 1320968.0, "Floor": "Lvl 2"},
-  {"Unit": "301", "Beds": "1 BR", "Size": 834.74, "Price": 1374474.0, "Floor": "Lvl 3"},
-  {"Unit": "302", "Beds": "1 BR", "Size": 827.31, "Price": 1362288.0, "Floor": "Lvl 3"},
-  {"Unit": "303", "Beds": "STUDIO", "Size": 410.0, "Price": 773921.0, "Floor": "Lvl 3"},
-  {"Unit": "304", "Beds": "1 BR", "Size": 819.13, "Price": 1276205.0, "Floor": "Lvl 3"},
-  {"Unit": "305", "Beds": "2 BR", "Size": 1333.97, "Price": 2158106.0, "Floor": "Lvl 3"},
-  {"Unit": "306", "Beds": "2 BR", "Size": 1155.18, "Price": 1626400.0, "Floor": "Lvl 3"},
-  {"Unit": "307", "Beds": "STUDIO", "Size": 485.67, "Price": 771244.0, "Floor": "Lvl 3"},
-  {"Unit": "308", "Beds": "STUDIO", "Size": 485.56, "Price": 771069.0, "Floor": "Lvl 3"},
-  {"Unit": "309", "Beds": "STUDIO", "Size": 408.71, "Price": 718512.0, "Floor": "Lvl 3"},
-  {"Unit": "310", "Beds": "STUDIO", "Size": 408.71, "Price": 718512.0, "Floor": "Lvl 3"},
-  {"Unit": "311", "Beds": "1 BR", "Size": 828.18, "Price": 1167567.0, "Floor": "Lvl 3"},
-  {"Unit": "312", "Beds": "1 BR", "Size": 802.02, "Price": 1069093.0, "Floor": "Lvl 3"},
-  {"Unit": "313", "Beds": "2 BR", "Size": 1635.68, "Price": 2128440.0, "Floor": "Lvl 3"},
-  {"Unit": "314", "Beds": "STUDIO", "Size": 410.0, "Price": 720815.0, "Floor": "Lvl 3"},
-  {"Unit": "315", "Beds": "1 BR", "Size": 827.31, "Price": 1102804.0, "Floor": "Lvl 3"},
-  {"Unit": "316", "Beds": "1 BR", "Size": 819.78, "Price": 1155781.0, "Floor": "Lvl 3"},
-  {"Unit": "317", "Beds": "2 BR", "Size": 1331.5, "Price": 2084042.0, "Floor": "Lvl 3"},
-  {"Unit": "318", "Beds": "2 BR", "Size": 1177.0, "Price": 1776883.0, "Floor": "Lvl 3"},
-  {"Unit": "319", "Beds": "1 BR", "Size": 832.91, "Price": 1371472.0, "Floor": "Lvl 3"}
+  {
+    "Unit": "201",
+    "Beds": "1 BR",
+    "Size": 834.96,
+    "Price": 1367803.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "202",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1355322.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "203",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 740004.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "204",
+    "Beds": "1 BR",
+    "Size": 819.24,
+    "Price": 1342155.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "205",
+    "Beds": "2 BR",
+    "Size": 1632.35,
+    "Price": 2539938.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "206",
+    "Beds": "2 BR",
+    "Size": 1568.41,
+    "Price": 2151745.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "207",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 767359.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "208",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 725000.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "209",
+    "Beds": "STUDIO",
+    "Size": 408.7,
+    "Price": 715225.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "210",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 717535.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "211",
+    "Beds": "1 BR",
+    "Size": 828.18,
+    "Price": 1160593.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "212",
+    "Beds": "2 BR",
+    "Size": 1267.13,
+    "Price": 1772813.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "213",
+    "Beds": "1 BR",
+    "Size": 788.0,
+    "Price": 1044484.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "214",
+    "Beds": "1 BR",
+    "Size": 825.16,
+    "Price": 1156381.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "215",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1159380.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "216",
+    "Beds": "1 BR",
+    "Size": 819.89,
+    "Price": 1070000.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "217",
+    "Beds": "2 BR",
+    "Size": 1629.76,
+    "Price": 2064144.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "218",
+    "Beds": "2 BR",
+    "Size": 1571.32,
+    "Price": 2445181.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "219",
+    "Beds": "1 BR",
+    "Size": 833.13,
+    "Price": 1320968.0,
+    "Floor": "Lvl 2"
+  },
+  {
+    "Unit": "301",
+    "Beds": "1 BR",
+    "Size": 834.74,
+    "Price": 1374474.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "302",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1362288.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "303",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 773921.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "304",
+    "Beds": "1 BR",
+    "Size": 819.13,
+    "Price": 1276205.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "305",
+    "Beds": "2 BR",
+    "Size": 1333.97,
+    "Price": 2158106.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "306",
+    "Beds": "2 BR",
+    "Size": 1155.18,
+    "Price": 1626400.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "307",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 771244.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "308",
+    "Beds": "STUDIO",
+    "Size": 485.56,
+    "Price": 771069.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "309",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 718512.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "310",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 718512.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "311",
+    "Beds": "1 BR",
+    "Size": 828.18,
+    "Price": 1167567.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "312",
+    "Beds": "1 BR",
+    "Size": 802.02,
+    "Price": 1069093.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "313",
+    "Beds": "2 BR",
+    "Size": 1635.68,
+    "Price": 2128440.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "314",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 720815.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "315",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1102804.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "316",
+    "Beds": "1 BR",
+    "Size": 819.78,
+    "Price": 1155781.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "317",
+    "Beds": "2 BR",
+    "Size": 1331.5,
+    "Price": 2084042.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "318",
+    "Beds": "2 BR",
+    "Size": 1177.0,
+    "Price": 1776883.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "319",
+    "Beds": "1 BR",
+    "Size": 832.91,
+    "Price": 1371472.0,
+    "Floor": "Lvl 3"
+  },
+  {
+    "Unit": "401",
+    "Beds": "1 BR",
+    "Size": 835.06,
+    "Price": 1382030.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "402",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1328177.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "403",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 826620.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "404",
+    "Beds": "2 BR",
+    "Size": 1554.31,
+    "Price": 2444949.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "405",
+    "Beds": "2 BR",
+    "Size": 1647.09,
+    "Price": 2503875.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "406",
+    "Beds": "1 BR",
+    "Size": 819.78,
+    "Price": 1035564.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "407",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 775129.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "408",
+    "Beds": "STUDIO",
+    "Size": 485.56,
+    "Price": 774954.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "409",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 724095.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "410",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 721782.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "411",
+    "Beds": "1 BR",
+    "Size": 828.28,
+    "Price": 1174683.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "412",
+    "Beds": "1 BR",
+    "Size": 829.47,
+    "Price": 1176362.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "413",
+    "Beds": "1 BR",
+    "Size": 788.0,
+    "Price": 1056735.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "414",
+    "Beds": "1 BR",
+    "Size": 825.16,
+    "Price": 1069693.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "415",
+    "Beds": "1 BR",
+    "Size": 827.21,
+    "Price": 1109289.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "416",
+    "Beds": "2 BR",
+    "Size": 1568.52,
+    "Price": 2178313.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "417",
+    "Beds": "2 BR",
+    "Size": 1633.42,
+    "Price": 2569110.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "418",
+    "Beds": "1 BR",
+    "Size": 821.0,
+    "Price": 1285670.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "419",
+    "Beds": "1 BR",
+    "Size": 832.8,
+    "Price": 1212873.0,
+    "Floor": "Lvl 4"
+  },
+  {
+    "Unit": "501",
+    "Beds": "1 BR",
+    "Size": 835.06,
+    "Price": 1281550.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "502",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1269656.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "503",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 813283.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "504",
+    "Beds": "2 BR",
+    "Size": 1153.35,
+    "Price": 1886067.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "505",
+    "Beds": "2 BR",
+    "Size": 1335.16,
+    "Price": 2112242.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "506",
+    "Beds": "1 BR",
+    "Size": 819.89,
+    "Price": 1106032.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "507",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 779015.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "508",
+    "Beds": "STUDIO",
+    "Size": 485.56,
+    "Price": 755473.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "509",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 727375.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "510",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 700000.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "511",
+    "Beds": "1 BR",
+    "Size": 828.18,
+    "Price": 1181516.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "512",
+    "Beds": "2 BR",
+    "Size": 1266.59,
+    "Price": 1804058.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "513",
+    "Beds": "1 BR",
+    "Size": 788.0,
+    "Price": 1042135.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "514",
+    "Beds": "1 BR",
+    "Size": 825.16,
+    "Price": 1074181.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "515",
+    "Beds": "1 BR",
+    "Size": 827.21,
+    "Price": 1109330.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "516",
+    "Beds": "2 BR",
+    "Size": 1155.08,
+    "Price": 1588114.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "517",
+    "Beds": "2 BR",
+    "Size": 1329.77,
+    "Price": 2173725.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "518",
+    "Beds": "1 BR",
+    "Size": 822.0,
+    "Price": 1293214.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "519",
+    "Beds": "1 BR",
+    "Size": 832.8,
+    "Price": 1278082.0,
+    "Floor": "Lvl 5"
+  },
+  {
+    "Unit": "601",
+    "Beds": "1 BR",
+    "Size": 834.96,
+    "Price": 1395928.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "602",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1383189.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "603",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 833161.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "604",
+    "Beds": "1 BR",
+    "Size": 828.0,
+    "Price": 1284257.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "605",
+    "Beds": "2 BR",
+    "Size": 1632.35,
+    "Price": 2594932.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "606",
+    "Beds": "2 BR",
+    "Size": 1568.41,
+    "Price": 2204576.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "607",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 782900.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "608",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 735926.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "609.",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 721038.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "610",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 684625.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "611",
+    "Beds": "1 BR",
+    "Size": 828.18,
+    "Price": 1188490.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "612",
+    "Beds": "2 BR",
+    "Size": 1267.13,
+    "Price": 1815495.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "613",
+    "Beds": "1 BR",
+    "Size": 788.0,
+    "Price": 1048316.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "614",
+    "Beds": "1 BR",
+    "Size": 825.16,
+    "Price": 970000.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "615",
+    "Beds": "1 BR",
+    "Size": 831.0,
+    "Price": 1127572.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "616",
+    "Beds": "1 BR",
+    "Size": 819.89,
+    "Price": 1079213.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "617",
+    "Beds": "2 BR",
+    "Size": 1629.76,
+    "Price": 2119041.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "618",
+    "Beds": "2 BR",
+    "Size": 1571.32,
+    "Price": 2498110.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "619",
+    "Beds": "1 BR",
+    "Size": 849.0,
+    "Price": 1286903.0,
+    "Floor": "Lvl 6"
+  },
+  {
+    "Unit": "701",
+    "Beds": "1 BR",
+    "Size": 834.74,
+    "Price": 1402591.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "702",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1390156.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "703",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 819712.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "704",
+    "Beds": "1 BR",
+    "Size": 827.0,
+    "Price": 1261799.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "705",
+    "Beds": "2 BR",
+    "Size": 1357.0,
+    "Price": 2081829.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "706",
+    "Beds": "2 BR",
+    "Size": 1155.18,
+    "Price": 1665311.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "707",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 771049.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "708",
+    "Beds": "STUDIO",
+    "Size": 485.56,
+    "Price": 770875.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "709",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 716952.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "710",
+    "Beds": "STUDIO",
+    "Size": 406.0,
+    "Price": 727009.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "711",
+    "Beds": "1 BR",
+    "Size": 828.18,
+    "Price": 1195464.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "712",
+    "Beds": "1 BR",
+    "Size": 802.02,
+    "Price": 1157876.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "713",
+    "Beds": "2 BR",
+    "Size": 1635.68,
+    "Price": 2183537.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "714",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 733936.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "715",
+    "Beds": "1 BR",
+    "Size": 831.0,
+    "Price": 1134219.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "716",
+    "Beds": "1 BR",
+    "Size": 821.0,
+    "Price": 1109850.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "717",
+    "Beds": "2 BR",
+    "Size": 1331.5,
+    "Price": 2128892.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "718",
+    "Beds": "2 BR",
+    "Size": 1156.8,
+    "Price": 1701768.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "719",
+    "Beds": "1 BR",
+    "Size": 843.0,
+    "Price": 1340402.0,
+    "Floor": "Lvl 7"
+  },
+  {
+    "Unit": "801",
+    "Beds": "1 BR",
+    "Size": 835.06,
+    "Price": 1410159.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "802",
+    "Beds": "1 BR",
+    "Size": 831.0,
+    "Price": 1327826.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "803",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 822946.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "804",
+    "Beds": "2 BR",
+    "Size": 1554.31,
+    "Price": 2497304.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "805",
+    "Beds": "2 BR",
+    "Size": 1647.09,
+    "Price": 2559356.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "806",
+    "Beds": "1 BR",
+    "Size": 819.78,
+    "Price": 1190298.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "807",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 732000.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "808",
+    "Beds": "STUDIO",
+    "Size": 485.56,
+    "Price": 743062.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "809",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 720000.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "810",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 734861.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "811",
+    "Beds": "1 BR",
+    "Size": 828.28,
+    "Price": 1202583.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "812",
+    "Beds": "1 BR",
+    "Size": 829.47,
+    "Price": 1204302.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "813",
+    "Beds": "1 BR",
+    "Size": 745.4,
+    "Price": 992731.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "814",
+    "Beds": "1 BR",
+    "Size": 825.16,
+    "Price": 1198073.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "815",
+    "Beds": "1 BR",
+    "Size": 831.0,
+    "Price": 1140867.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "816",
+    "Beds": "2 BR",
+    "Size": 1568.52,
+    "Price": 2231147.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "817",
+    "Beds": "2 BR",
+    "Size": 1633.42,
+    "Price": 2624130.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "818",
+    "Beds": "1 BR",
+    "Size": 821.0,
+    "Price": 1193867.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "819",
+    "Beds": "1 BR",
+    "Size": 832.8,
+    "Price": 1406357.0,
+    "Floor": "Lvl 8"
+  },
+  {
+    "Unit": "901",
+    "Beds": "1 BR",
+    "Size": 835.06,
+    "Price": 1417191.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "902",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1404089.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "903",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 843001.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "904",
+    "Beds": "2 BR",
+    "Size": 1153.35,
+    "Price": 1924917.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "905",
+    "Beds": "2 BR",
+    "Size": 1335.16,
+    "Price": 2157216.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "906",
+    "Beds": "1 BR",
+    "Size": 819.89,
+    "Price": 1197361.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "907",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 794556.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "908",
+    "Beds": "STUDIO",
+    "Size": 485.56,
+    "Price": 750300.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "909",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 705000.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "910.",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 693843.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "911",
+    "Beds": "1 BR",
+    "Size": 828.18,
+    "Price": 1120842.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "912",
+    "Beds": "2 BR",
+    "Size": 1266.59,
+    "Price": 1846722.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "913",
+    "Beds": "1 BR",
+    "Size": 788.0,
+    "Price": 1066855.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "914",
+    "Beds": "1 BR",
+    "Size": 825.16,
+    "Price": 1093964.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "915",
+    "Beds": "1 BR",
+    "Size": 827.21,
+    "Price": 970000.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "916",
+    "Beds": "2 BR",
+    "Size": 1175.0,
+    "Price": 1713927.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "917",
+    "Beds": "2 BR",
+    "Size": 1329.77,
+    "Price": 2218517.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "918",
+    "Beds": "1 BR",
+    "Size": 822.0,
+    "Price": 1253531.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "919",
+    "Beds": "1 BR",
+    "Size": 832.8,
+    "Price": 1413370.0,
+    "Floor": "Lvl 9"
+  },
+  {
+    "Unit": "1001",
+    "Beds": "1 BR",
+    "Size": 834.95,
+    "Price": 1240000.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1002",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1269750.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1003",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 829356.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1004",
+    "Beds": "1 BR",
+    "Size": 828.0,
+    "Price": 1316918.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1005",
+    "Beds": "2 BR",
+    "Size": 1632.35,
+    "Price": 2512187.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1006",
+    "Beds": "2 BR",
+    "Size": 1568.41,
+    "Price": 2257407.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1007",
+    "Beds": "STUDIO",
+    "Size": 485.66,
+    "Price": 798425.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1008",
+    "Beds": "STUDIO",
+    "Size": 485.66,
+    "Price": 750520.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1009",
+    "Beds": "STUDIO",
+    "Size": 408.7,
+    "Price": 728000.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1010",
+    "Beds": "STUDIO",
+    "Size": 408.7,
+    "Price": 723368.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1011",
+    "Beds": "1 BR",
+    "Size": 830.0,
+    "Price": 1118446.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1012",
+    "Beds": "2 BR",
+    "Size": 1267.12,
+    "Price": 1858163.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1013",
+    "Beds": "1 BR",
+    "Size": 788.0,
+    "Price": 1094935.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1014",
+    "Beds": "1 BR",
+    "Size": 830.0,
+    "Price": 1153412.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1015",
+    "Beds": "1 BR",
+    "Size": 831.0,
+    "Price": 1154162.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1016",
+    "Beds": "1 BR",
+    "Size": 822.0,
+    "Price": 1206634.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1017",
+    "Beds": "2 BR",
+    "Size": 1629.76,
+    "Price": 2173939.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1018",
+    "Beds": "2 BR",
+    "Size": 1571.31,
+    "Price": 2551022.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1019",
+    "Beds": "1 BR",
+    "Size": 833.12,
+    "Price": 1377079.0,
+    "Floor": "Lvl 10"
+  },
+  {
+    "Unit": "1101",
+    "Beds": "1 BR",
+    "Size": 834.74,
+    "Price": 1430709.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1102",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1315059.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1103",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 832570.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1104",
+    "Beds": "1 BR",
+    "Size": 827.0,
+    "Price": 1340826.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1105",
+    "Beds": "2 BR",
+    "Size": 1357.0,
+    "Price": 2081042.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1106",
+    "Beds": "2 BR",
+    "Size": 1155.18,
+    "Price": 1581511.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1107",
+    "Beds": "STUDIO",
+    "Size": 485.66,
+    "Price": 705996.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1108",
+    "Beds": "STUDIO",
+    "Size": 485.55,
+    "Price": 702150.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1109",
+    "Beds": "STUDIO",
+    "Size": 408.7,
+    "Price": 699672.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1110",
+    "Beds": "STUDIO",
+    "Size": 408.71,
+    "Price": 722769.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1111",
+    "Beds": "1 BR",
+    "Size": 828.17,
+    "Price": 1223346.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1112",
+    "Beds": "1 BR",
+    "Size": 802.02,
+    "Price": 1161194.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1113",
+    "Beds": "2 BR",
+    "Size": 1635.68,
+    "Price": 2238634.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1114",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 732115.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1115",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1086407.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1116",
+    "Beds": "1 BR",
+    "Size": 821.0,
+    "Price": 1147342.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1117",
+    "Beds": "2 BR",
+    "Size": 1331.5,
+    "Price": 2173743.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1118",
+    "Beds": "2 BR",
+    "Size": 1156.79,
+    "Price": 1700000.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1119",
+    "Beds": "1 BR",
+    "Size": 832.91,
+    "Price": 1427584.0,
+    "Floor": "Lvl 11"
+  },
+  {
+    "Unit": "1201",
+    "Beds": "1 BR",
+    "Size": 835.06,
+    "Price": 1438287.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1202",
+    "Beds": "1 BR",
+    "Size": 827.31,
+    "Price": 1200178.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1203",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 835805.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1204",
+    "Beds": "2 BR",
+    "Size": 1554.3,
+    "Price": 2549644.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1205",
+    "Beds": "2 BR",
+    "Size": 1647.09,
+    "Price": 2614837.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1206",
+    "Beds": "1 BR",
+    "Size": 819.78,
+    "Price": 1117237.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1207",
+    "Beds": "STUDIO",
+    "Size": 485.67,
+    "Price": 782026.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1208",
+    "Beds": "STUDIO",
+    "Size": 485.56,
+    "Price": 806030.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1209",
+    "Beds": "STUDIO",
+    "Size": 410.0,
+    "Price": 715000.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1210",
+    "Beds": "STUDIO",
+    "Size": 408.7,
+    "Price": 725483.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1211",
+    "Beds": "1 BR",
+    "Size": 828.28,
+    "Price": 1230483.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1212",
+    "Beds": "1 BR",
+    "Size": 829.46,
+    "Price": 1232228.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1213",
+    "Beds": "1 BR",
+    "Size": 745.4,
+    "Price": 1047287.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1214",
+    "Beds": "1 BR",
+    "Size": 825.16,
+    "Price": 1075000.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1215",
+    "Beds": "1 BR",
+    "Size": 827.2,
+    "Price": 914000.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1216",
+    "Beds": "2 BR",
+    "Size": 1568.52,
+    "Price": 2283982.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1217",
+    "Beds": "2 BR",
+    "Size": 1633.42,
+    "Price": 2679151.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1218",
+    "Beds": "1 BR",
+    "Size": 821.0,
+    "Price": 1338214.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1219",
+    "Beds": "1 BR",
+    "Size": 832.8,
+    "Price": 1434409.0,
+    "Floor": "Lvl 12"
+  },
+  {
+    "Unit": "1301",
+    "Beds": "3 BR DU PH",
+    "Size": 3958.54,
+    "Price": 6583052.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1302",
+    "Beds": "3 BR DU PH",
+    "Size": 3920.22,
+    "Price": 6519326.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1303",
+    "Beds": "3 BR DU PH",
+    "Size": 4170.37,
+    "Price": 6935325.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1304",
+    "Beds": "2 BR",
+    "Size": 1213.52,
+    "Price": 2002060.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1305",
+    "Beds": "2 BR",
+    "Size": 1235.37,
+    "Price": 1842950.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1306",
+    "Beds": "2 BR",
+    "Size": 1239.57,
+    "Price": 1845283.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1307",
+    "Beds": "2 BR",
+    "Size": 1249.15,
+    "Price": 1863446.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1308",
+    "Beds": "2 BR",
+    "Size": 1191.56,
+    "Price": 1657000.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1309",
+    "Beds": "2 BR",
+    "Size": 1240.11,
+    "Price": 1850001.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1310",
+    "Beds": "2 BR",
+    "Size": 1258.0,
+    "Price": 1876714.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1311",
+    "Beds": "3 BR DU PH",
+    "Size": 4757.0,
+    "Price": 7910891.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "1312",
+    "Beds": "3 BR DU PH",
+    "Size": 3987.38,
+    "Price": 6631013.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "Shop 1",
+    "Beds": "N/A",
+    "Size": 3345.21,
+    "Price": 8395002.0,
+    "Floor": "Ground"
+  },
+  {
+    "Unit": "Shop 2",
+    "Beds": "N/A",
+    "Size": 3664.99,
+    "Price": 9070850.0,
+    "Floor": "Ground"
+  },
+  {
+    "Unit": "Shop 3",
+    "Beds": "N/A",
+    "Size": 1890.14,
+    "Price": 5953941.0,
+    "Floor": "Ground"
+  },
+  {
+    "Unit": "Shop 4",
+    "Beds": "N/A",
+    "Size": 1476.27,
+    "Price": 4650251.0,
+    "Floor": "Ground"
+  },
+  {
+    "Unit": "Test-1312",
+    "Beds": "3 BR DU PH",
+    "Size": 3987.38,
+    "Price": 6631013.0,
+    "Floor": "Lvl 13"
+  },
+  {
+    "Unit": "Test-Shop-1312",
+    "Beds": "N/A",
+    "Size": 1000.0,
+    "Price": 1000000.0,
+    "Floor": "Ground"
+  }
 ];
 
-function init() { filterUnits(); }
+function init() {
+  filterUnits();
+}
 
 function filterUnits() {
   const search = document.getElementById('searchInput').value.toLowerCase().trim();
   const select = document.getElementById('unitSelect');
   select.innerHTML = '';
+
   const filtered = inventory.filter(u => u.Unit.toLowerCase().includes(search));
+
   if (filtered.length === 0) {
     const opt = document.createElement('option');
     opt.textContent = 'No matching units found';
     select.appendChild(opt);
+    resetDisplay();
     return;
   }
+
   filtered.forEach(u => {
     const opt = document.createElement('option');
     opt.value = u.Unit;
     opt.textContent = `Unit ${u.Unit} (${u.Beds})`;
     select.appendChild(opt);
   });
+
   calculate();
+}
+
+function resetDisplay() {
+  document.getElementById('dispBeds').textContent = '-';
+  document.getElementById('dispFloor').textContent = '-';
+  document.getElementById('dispSize').textContent = '-';
+  document.getElementById('dispOrigPSF').textContent = '0 AED';
+  document.getElementById('dispDiscountedPSF').textContent = '0 AED';
+  document.getElementById('dispBasePrice').textContent = '-';
+  document.getElementById('dispDiscountAmount').textContent = '-';
+  document.getElementById('dispDiscountedPrice').textContent = '-';
+  document.getElementById('dispDldFee').textContent = '-';
+  document.getElementById('dispAgencyFee').textContent = '-';
+  document.getElementById('dispInternalFee').textContent = '-';
+  document.getElementById('dispNetRevenue').textContent = 'AED 0';
+  document.getElementById('dispNetPSF').textContent = '0 AED / SQ.FT Net';
 }
 
 function calculate() {
@@ -380,37 +1945,43 @@ function calculate() {
   document.getElementById('dispFloor').textContent = unit.Floor || 'N/A';
   document.getElementById('dispSize').textContent = `${unit.Size.toLocaleString()} sq.ft`;
 
+  // Inputs
   const spotCashVal = parseFloat(document.getElementById('spotCash').value);
   const discountPct = parseFloat(document.getElementById('discountPct').value) || 0;
   const dldWaiverPct = parseFloat(document.getElementById('dldWaiver').value) || 0;
   const agencyCommPct = parseFloat(document.getElementById('agencyComm').value) || 0;
   const internalCommPct = parseFloat(document.getElementById('internalComm').value) || 1.2;
 
+  // Math Calculations (Developer Perspective)
   const basePrice = !isNaN(spotCashVal) && spotCashVal > 0 ? spotCashVal : unit.Price;
   const discountAmount = basePrice * (discountPct / 100);
   const discountedSellingPrice = basePrice - discountAmount;
 
+  // Rates per SQFT
   const origPSF = unit.Size > 0 ? basePrice / unit.Size : 0;
   const discountedPSF = unit.Size > 0 ? discountedSellingPrice / unit.Size : 0;
 
+  // Costs borne by Developer
   const dldCost = discountedSellingPrice * (dldWaiverPct / 100);
   const agencyCost = discountedSellingPrice * (agencyCommPct / 100);
   const internalCost = discountedSellingPrice * (internalCommPct / 100);
 
+  // Developer Net Realized Revenue
   const netRealizedRevenue = discountedSellingPrice - dldCost - agencyCost - internalCost;
   const netPSF = unit.Size > 0 ? netRealizedRevenue / unit.Size : 0;
 
+  // Format currency output
   const fmt = (num) => 'AED ' + Math.round(num).toLocaleString();
 
-  document.getElementById('dispOrigPSF').textContent = `${origPSF.toFixed(2)} AED/sq.ft`;
-  document.getElementById('dispDiscountedPSF').textContent = `${discountedPSF.toFixed(2)} AED/sq.ft`;
+  document.getElementById('dispOrigPSF').textContent = `${origPSF.toFixed(2)} AED / sq.ft`;
+  document.getElementById('dispDiscountedPSF').textContent = `${discountedPSF.toFixed(2)} AED / sq.ft`;
 
   document.getElementById('dispBasePrice').textContent = fmt(basePrice);
   document.getElementById('dispDiscountAmount').textContent = `- ${fmt(discountAmount)} (${discountPct}%)`;
   document.getElementById('dispDiscountedPrice').textContent = fmt(discountedSellingPrice);
   document.getElementById('dispDldFee').textContent = `- ${fmt(dldCost)} (${dldWaiverPct}%)`;
   document.getElementById('dispAgencyFee').textContent = `- ${fmt(agencyCost)} (${agencyCommPct}%)`;
-  document.getElementById('dispInternalFee').textContent = `- ${fmt(internalCommPct)} (${internalCommPct}%)`;
+  document.getElementById('dispInternalFee').textContent = `- ${fmt(internalCost)} (${internalCommPct}%)`;
 
   document.getElementById('dispNetRevenue').textContent = fmt(netRealizedRevenue);
   document.getElementById('dispNetPSF').textContent = `${netPSF.toFixed(2)} AED / SQ.FT Net`;
